@@ -1,0 +1,16 @@
+project/project
+project/target
+target/
+.idea/
+.bsp/
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+data/
