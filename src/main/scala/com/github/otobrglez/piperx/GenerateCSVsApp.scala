@@ -36,11 +36,20 @@ object GenerateCSVs extends IOApp.Simple:
   private val logger = Slf4jLogger.getLogger[IO]
 
   // Max number of files to generate
-  private val maxNumberOfFiles = 1000
+  private val maxNumberOfFiles   = 10
+  private val maxNumberOfColumns = 100
+  private val maxNumberOfRows    = 20_000
 
   def run: IO[Unit] = for
     _        <- logger.info("Generating CSVs")
     fileNames =
       Gen.listOfN(maxNumberOfFiles, Gen.stringOfN(40, Gen.alphaNumChar).map(s => s"data/file-$s.csv")).sample.get
-    _        <- IO.parSequence(fileNames.map(fileName => CSV.writeGenToFile(Paths.get(fileName).toAbsolutePath)))
+    _        <-
+      IO.parSequence(
+        fileNames.map(fileName =>
+          CSV
+            .writeGenToFile(Paths.get(fileName).toAbsolutePath, maxNumberOfColumns, maxNumberOfRows)
+            .flatTap(path => logger.info(s"Generated $path"))
+        )
+      )
   yield ()
